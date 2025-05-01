@@ -1,0 +1,4 @@
+{
+  "command": "npm start",
+  "timeoutSeconds": 30
+}
