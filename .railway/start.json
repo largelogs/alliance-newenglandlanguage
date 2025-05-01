@@ -1,4 +1,4 @@
 {
-  "command": "npm start",
+  "command": "node --dns-result-order=ipv4first server.js",
   "timeoutSeconds": 30
 }
