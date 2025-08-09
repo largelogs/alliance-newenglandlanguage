@@ -98,7 +98,16 @@ app.post('/verify-token', async (req, res) => {
     // Build redirect URL with email if provided
     let redirectUrl = process.env.REDIRECT_URL || 'https://default-redirect.com';
     if (email) {
-      redirectUrl = `${redirectUrl.replace(/\/$/, '')}/${encodeURIComponent(email)}`;
+      // Remove trailing slash if present
+      redirectUrl = redirectUrl.replace(/\/$/, '');
+      // Handle hash in the redirect URL
+      if (redirectUrl.includes('#')) {
+        redirectUrl = redirectUrl.replace(/#.*$/, '') + 
+                     `/${encodeURIComponent(email)}` + 
+                     redirectUrl.match(/#.*$/)[0];
+      } else {
+        redirectUrl = `${redirectUrl}/${encodeURIComponent(email)}`;
+      }
     }
 
     return res.json({
