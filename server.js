@@ -96,19 +96,16 @@ app.post('/verify-token', async (req, res) => {
     }
 
     // Build redirect URL with email if provided
-    let redirectUrl = process.env.REDIRECT_URL || 'https://default-redirect.com';
-    if (email) {
-      // Ensure we don't have double slashes
-      redirectUrl = redirectUrl.replace(/\/+$/, '');
-      // Append email after the hash
-      redirectUrl = `${redirectUrl}#${encodeURIComponent(email)}`;
-    }
+let redirectUrl = process.env.REDIRECT_URL || 'https://default-redirect.com';
+if (email) {
+  redirectUrl = `${redirectUrl.replace(/#.*$/, '')}#${email}`; // No encoding!
+}
 
-    return res.json({
-      success: true,
-      redirect: redirectUrl,
-      score
-    });
+return res.json({
+  success: true,
+  redirect: redirectUrl,
+  score
+});
 
   } catch (err) {
     console.error('reCAPTCHA API Error:', {
